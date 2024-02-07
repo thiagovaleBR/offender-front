@@ -1,7 +1,9 @@
 <template>
   <div class="q-pa-md">
     <div class="row">
-      <q-input label="ID da linha" v-model="lineId" />
+      <div class="col-1">
+        <line-select v-model="lineId" />
+      </div>
       <q-input label="Data" v-model="date" mask="####-##-##">
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
@@ -39,6 +41,7 @@ import {
   Appointment,
 } from '../services/appointment.service';
 import { QTableColumn } from 'quasar';
+import LineSelect from 'src/components/LineSelect.vue';
 
 const appointments = ref<Appointment[]>([]);
 
