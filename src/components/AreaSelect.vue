@@ -1,9 +1,8 @@
 <template>
   <q-select
-    :options="lines"
+    :options="areas"
     option-value="id"
     option-label="name"
-    label="Linha"
     :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
     :loading="isLoading"
@@ -13,29 +12,29 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Line, getLines } from 'src/services/line.service';
+import { Area, getAreas } from 'src/services/area.service';
 
 defineProps<{
-  modelValue: Line | undefined;
+  modelValue: Area | undefined;
   disable?: boolean;
 }>();
 
 defineEmits<{
-  (e: 'update:modelValue', value: Line | undefined): void;
+  (e: 'update:modelValue', value: Area | undefined): void;
 }>();
 
-const lines = ref<Line[]>([]);
+const areas = ref<Area[]>([]);
 
 const isLoading = ref<boolean>(false);
 
-async function loadLines() {
+async function loadAreas() {
   try {
     isLoading.value = true;
-    lines.value = await getLines();
+    areas.value = await getAreas();
   } finally {
     isLoading.value = false;
   }
 }
 
-onMounted(loadLines);
+onMounted(loadAreas);
 </script>
