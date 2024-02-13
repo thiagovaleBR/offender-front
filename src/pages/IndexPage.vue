@@ -2,9 +2,14 @@
   <div class="q-pa-md">
     <div class="row">
       <div class="col-1">
-        <line-select v-model="lineId" />
+        <line-select v-model="line" :disable="!!creating.length" />
       </div>
-      <q-input label="Data" v-model="date" mask="####-##-##">
+      <q-input
+        label="Data"
+        v-model="date"
+        mask="####-##-##"
+        :disable="!!creating.length"
+      >
         <template v-slot:append>
           <q-icon name="event" class="cursor-pointer">
             <q-popup-proxy
@@ -12,7 +17,11 @@
               transition-show="scale"
               transition-hide="scale"
             >
-              <q-date mask="YYYY-MM-DD" v-model="date">
+              <q-date
+                mask="YYYY-MM-DD"
+                v-model="date"
+                :disable="!!creating.length"
+              >
                 <div class="row items-center justify-end">
                   <q-btn v-close-popup label="Close" color="primary" flat />
                 </div>
@@ -30,7 +39,30 @@
       :rows="appointments"
       :columns="columns"
       row-key="name"
-    />
+    >
+      <template #top-right>
+        <q-btn
+          color="primary"
+          icon="add"
+          dense
+          round
+          @click="onCreate()"
+          :disable="!line || !date"
+        >
+          <q-tooltip v-if="!line || !date"
+            >Favor inserir Linha e Data</q-tooltip
+          >
+        </q-btn>
+      </template>
+      <template #bottom-row v-if="line && date">
+        <appointment-form-row
+          v-for="i in creating"
+          :key="i"
+          :line="line"
+          :date="date"
+        />
+      </template>
+    </q-table>
   </div>
 </template>
 
@@ -41,15 +73,19 @@ import {
   Appointment,
 } from '../services/appointment.service';
 import { QTableColumn } from 'quasar';
+import { Line } from 'src/services/line.service';
 import LineSelect from 'src/components/LineSelect.vue';
+import AppointmentFormRow from 'src/components/AppointmentFormRow.vue';
 
 const appointments = ref<Appointment[]>([]);
 
-const lineId = ref<string>('');
+const creating = ref<number[]>([]);
+
+const line = ref<Line>();
+
 const date = ref<string>('');
 
 const columns: QTableColumn<Appointment>[] = [
-  // os campos são: Line_id, offender_id, start_time, end_time,description, ticket_id, Appointer
   {
     name: 'line_id',
     field: (a) => a.line.name,
@@ -99,11 +135,25 @@ const columns: QTableColumn<Appointment>[] = [
     align: 'center',
     sortable: true,
   },
+  {
+    name: 'actions',
+    field: () => undefined,
+    label: 'Ações',
+    align: 'center',
+  },
 ];
 
+function onCreate() {
+  creating.value.push(getNextCreatingIndex());
+}
+function getNextCreatingIndex() {
+  if (!creating.value.length) return 0;
+  return creating.value[creating.value.length - 1] + 1;
+}
 async function search() {
+  if (!line.value) return;
   appointments.value = await getAppointmentsByLineAndDate(
-    lineId.value,
+    line.value.id,
     date.value
   );
 }
