@@ -39,6 +39,7 @@
       :rows="appointments"
       :columns="columns"
       row-key="name"
+      :rows-per-page-options="[0]"
     >
       <template #top-right>
         <q-btn
@@ -56,11 +57,16 @@
       </template>
       <template #bottom-row v-if="line && date">
         <appointment-form-row
-          v-for="i in creating"
-          :key="i"
-          :line="line"
-          :date="date"
+          v-for="(appointment, idx) in creating"
+          :key="idx"
+          :model-value="appointment"
+          @remove="creating.splice(idx, 1)"
         />
+        <q-tr v-if="creating.length">
+          <q-td colspan="8" class="text-right">
+            <q-btn color="positive" label="Salvar" @click="onSave()" />
+          </q-td>
+        </q-tr>
       </template>
     </q-table>
   </div>
@@ -71,6 +77,9 @@ import { ref } from 'vue';
 import {
   getAppointmentsByLineAndDate,
   Appointment,
+  CreatingAppointment,
+  createAppointment,
+  CreateAppointmentDto,
 } from '../services/appointment.service';
 import { QTableColumn } from 'quasar';
 import { Line } from 'src/services/line.service';
@@ -79,7 +88,7 @@ import AppointmentFormRow from 'src/components/AppointmentFormRow.vue';
 
 const appointments = ref<Appointment[]>([]);
 
-const creating = ref<number[]>([]);
+const creating = ref<CreatingAppointment[]>([]);
 
 const line = ref<Line>();
 
@@ -144,17 +153,41 @@ const columns: QTableColumn<Appointment>[] = [
 ];
 
 function onCreate() {
-  creating.value.push(getNextCreatingIndex());
+  if (!line.value) return;
+  creating.value.push({
+    line: line.value,
+    date: date.value,
+    startTime: '',
+    endTime: '',
+    description: '',
+    ticketId: null,
+    appointer: '',
+  });
 }
-function getNextCreatingIndex() {
-  if (!creating.value.length) return 0;
-  return creating.value[creating.value.length - 1] + 1;
-}
+
 async function search() {
   if (!line.value) return;
   appointments.value = await getAppointmentsByLineAndDate(
     line.value.id,
     date.value
   );
+}
+
+async function onSave() {
+  const data: CreateAppointmentDto[] = creating.value
+    .filter((a) => a.offender != undefined)
+    .map((a) => ({
+      lineId: a.line.id,
+      offenderId: a.offender!.id,
+      date: a.date,
+      startTime: a.startTime,
+      endTime: a.endTime,
+      description: a.description,
+      ticketId: a.ticketId,
+      appointer: a.appointer,
+    }));
+  await createAppointment(data);
+  creating.value = [];
+  search();
 }
 </script>

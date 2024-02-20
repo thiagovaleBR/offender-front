@@ -1,11 +1,17 @@
 <template>
   <q-tr>
-    <q-td> {{ line.name }} </q-td>
+    <q-td> {{ modelValue.line.name }} </q-td>
     <q-td>
-      <area-select v-model="area" />
+      <area-select v-model="innerValue.offender" dense />
     </q-td>
     <q-td>
-      <q-input filled v-model="initialTime" mask="time" :rules="['time']">
+      <q-input
+        dense
+        v-model="innerValue.startTime"
+        mask="time"
+        :rules="['time']"
+        hide-bottom-space
+      >
         <template v-slot:append>
           <q-icon name="access_time" class="cursor-pointer">
             <q-popup-proxy
@@ -13,7 +19,7 @@
               transition-show="scale"
               transition-hide="scale"
             >
-              <q-time v-model="initialTime">
+              <q-time v-model="innerValue.startTime">
                 <div class="row items-center justify-end">
                   <q-btn v-close-popup label="Close" color="primary" flat />
                 </div>
@@ -24,7 +30,13 @@
       </q-input>
     </q-td>
     <q-td>
-      <q-input filled v-model="finalTime" mask="time" :rules="['time']">
+      <q-input
+        dense
+        v-model="innerValue.endTime"
+        mask="time"
+        :rules="['time']"
+        hide-bottom-space
+      >
         <template v-slot:append>
           <q-icon name="access_time" class="cursor-pointer">
             <q-popup-proxy
@@ -32,7 +44,7 @@
               transition-show="scale"
               transition-hide="scale"
             >
-              <q-time v-model="finalTime">
+              <q-time v-model="innerValue.endTime">
                 <div class="row items-center justify-end">
                   <q-btn v-close-popup label="Close" color="primary" flat />
                 </div>
@@ -43,33 +55,51 @@
       </q-input>
     </q-td>
     <q-td>
-      <q-input v-model="description" />
+      <q-input v-model="innerValue.description" dense />
     </q-td>
     <q-td>
-      <q-input v-model="ticketID" type="number" />
+      <q-input v-model="innerValue.ticketId" type="number" dense />
     </q-td>
     <q-td>
-      <q-input v-model="Appointer" />
+      <q-input v-model="innerValue.appointer" dense />
     </q-td>
-    <q-td> + - DELETE </q-td>
+    <q-td>
+      <q-btn
+        color="negative"
+        icon="delete"
+        dense
+        round
+        flat
+        @click="$emit('remove')"
+      />
+    </q-td>
   </q-tr>
 </template>
 
 <script setup lang="ts">
-import { Line } from 'src/services/line.service';
-import { Area } from 'src/services/area.service';
 import AreaSelect from 'src/components/AreaSelect.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { CreatingAppointment } from 'src/services/appointment.service';
 
-const area = ref<Area>();
-const description = ref<string>();
-const ticketID = ref<number>();
-const Appointer = ref<string>();
-const initialTime = ref<string>();
-const finalTime = ref<string>();
-
-defineProps<{
-  line: Line;
-  date: string;
+const props = defineProps<{
+  modelValue: CreatingAppointment;
 }>();
+
+const emit = defineEmits<{
+  (e: 'remove'): void;
+  (e: 'update:modelValue', value: CreatingAppointment): void;
+}>();
+
+const innerValue = ref<CreatingAppointment>(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    innerValue.value = newValue;
+  }
+);
+
+watch(innerValue, (newValue) => {
+  emit('update:modelValue', newValue);
+});
 </script>
