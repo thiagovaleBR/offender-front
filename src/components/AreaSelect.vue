@@ -12,18 +12,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Area, getAreas } from 'src/services/area.service';
+import { getAreas } from 'src/services/area.service';
+import { IdAndName } from 'src/services/appointment.service';
 
 defineProps<{
-  modelValue: Area | undefined;
+  modelValue: IdAndName | undefined;
   disable?: boolean;
 }>();
 
 defineEmits<{
-  (e: 'update:modelValue', value: Area | undefined): void;
+  (e: 'update:modelValue', value: IdAndName | undefined): void;
 }>();
 
-const areas = ref<Area[]>([]);
+const areas = ref<IdAndName[]>([]);
 
 const isLoading = ref<boolean>(false);
 
