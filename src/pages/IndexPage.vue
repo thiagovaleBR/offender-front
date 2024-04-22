@@ -43,10 +43,15 @@
     >
       <template #top-right>
         <q-btn
+          color="orange"
+          label="Alternar"
+          @click="onCreate()"
+          :disable="!line || !date"
+        >
+        </q-btn>
+        <q-btn
           color="primary"
-          icon="add"
-          dense
-          round
+          label="novo"
           @click="onCreate()"
           :disable="!line || !date"
         >
