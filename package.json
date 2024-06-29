@@ -1,8 +1,8 @@
 {
   "name": "offender-front",
   "version": "0.0.1",
-  "description": "Sistemas de relatório de ofensores",
-  "productName": "Offenders Tracker",
+  "description": "A Quasar Project",
+  "productName": "Quasar App",
   "author": "Thiago Vale <thiagovalef@gmail.com>",
   "private": true,
   "scripts": {

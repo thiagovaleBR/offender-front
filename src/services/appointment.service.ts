@@ -44,6 +44,3 @@ export function createAppointment(
 ): Promise<Appointment[]> {
   return api.post('/appointments', dtos).then((response) => response.data);
 }
-export function deleteAppointmentById(id: string): Promise<void> {
-  return api.delete(`/appointments/${id}`).then((response) => response.data);
-}

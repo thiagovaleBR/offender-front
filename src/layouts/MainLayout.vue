@@ -3,6 +3,9 @@
     <q-header elevated>
       <q-toolbar>
         <q-toolbar-title> Offenders Tracker </q-toolbar-title>
+
+        <div>Quasar v{{ $q.version }}</div>
+
       </q-toolbar>
     </q-header>
 
@@ -14,4 +17,5 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+
 </script>
