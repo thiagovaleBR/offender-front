@@ -38,7 +38,7 @@
       bordered
       :rows="appointments"
       :columns="columns"
-      row-key="name"
+      row-key="id"
       :rows-per-page-options="[0]"
     >
       <template #top-right>
@@ -53,22 +53,17 @@
           >
         </q-btn>
       </template>
-      <template #body="props">
-        <q-tr :props="props">
-          <q-td v-for="col in props.cols" :key="col.name" :props="props">
-            {{ props.row[col.field] }}
-          </q-td>
-          <q-td>
-            <q-btn
-              flat
-              round
-              dense
-              icon="delete"
-              color="negative"
-              @click="deleteAppointment(props.row)"
-            />
-          </q-td>
-        </q-tr>
+      <template #body-cell-actions="props">
+        <q-td :props="props">
+          <q-btn
+            flat
+            round
+            dense
+            icon="delete"
+            color="negative"
+            @click="deleteAppointment(props.row)"
+          />
+        </q-td>
       </template>
       <template #bottom-row v-if="line && date">
         <appointment-form-row
@@ -112,15 +107,15 @@ const date = ref<string>('');
 
 const columns: QTableColumn<Appointment>[] = [
   {
-    name: 'line_id',
-    field: (a) => a.line.name,
+    name: 'line_name',
+    field: (row) => row.line.name,
     label: 'Linha',
     align: 'center',
     sortable: true,
   },
   {
-    name: 'offender_id',
-    field: (a) => a.offender.name,
+    name: 'offender_name',
+    field: (row) => row.offender.name,
     label: 'Área Ofensora',
     align: 'center',
     sortable: true,
@@ -169,8 +164,16 @@ const columns: QTableColumn<Appointment>[] = [
 ];
 
 async function deleteAppointment(appointment: Appointment) {
-  await deleteAppointmentById(appointment.id);
-  search();
+  if (!appointment || !appointment.id) {
+    console.error('Invalid appointment data', appointment);
+    return;
+  }
+  try {
+    await deleteAppointmentById(appointment.id);
+    search();
+  } catch (error) {
+    console.error('Failed to delete appointment', error);
+  }
 }
 
 function onCreate() {
