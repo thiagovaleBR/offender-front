@@ -33,7 +33,7 @@
       <q-btn label="Buscar" color="primary" @click="search" />
     </div>
     <q-table
-      title="Ofensores do dia "
+      title="Ofensores do dia"
       flat
       bordered
       :rows="appointments"
@@ -44,9 +44,7 @@
       <template #top-right>
         <q-btn
           color="primary"
-          icon="add"
-          dense
-          round
+          label="novo"
           @click="onCreate()"
           :disable="!line || !date"
         >
@@ -54,6 +52,23 @@
             >Favor inserir Linha e Data</q-tooltip
           >
         </q-btn>
+      </template>
+      <template #body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            {{ props.row[col.field] }}
+          </q-td>
+          <q-td>
+            <q-btn
+              flat
+              round
+              dense
+              icon="delete"
+              color="negative"
+              @click="deleteAppointment(props.row)"
+            />
+          </q-td>
+        </q-tr>
       </template>
       <template #bottom-row v-if="line && date">
         <appointment-form-row
@@ -76,6 +91,7 @@
 import { ref } from 'vue';
 import {
   getAppointmentsByLineAndDate,
+  deleteAppointmentById,
   Appointment,
   CreatingAppointment,
   createAppointment,
@@ -151,6 +167,11 @@ const columns: QTableColumn<Appointment>[] = [
     align: 'center',
   },
 ];
+
+async function deleteAppointment(appointment: Appointment) {
+  await deleteAppointmentById(appointment.id);
+  search();
+}
 
 function onCreate() {
   if (!line.value) return;
