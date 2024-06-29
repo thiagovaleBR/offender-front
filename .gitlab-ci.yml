@@ -57,7 +57,7 @@ deploy:
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
     - docker pull eletraenergy/offenders-frontend:latest
-    - docker run -d -p 8883:80 eletraenergy/offenders-frontend:latest
+    - docker run -d -p 9440:80 eletraenergy/offenders-frontend:latest
   when: manual
   tags:
     - docker
