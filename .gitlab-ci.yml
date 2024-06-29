@@ -54,4 +54,4 @@ deploy:
     - docker run -d -p 80:80 eletraenergy/Offenders-frontend:latest
   when: manual
   tags:
-    - shanghai
+    - docker
