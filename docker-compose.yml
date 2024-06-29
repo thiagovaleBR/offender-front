@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  offenders-frontend:
+    build:
+      context: ./path/to/frontend
+      dockerfile: Dockerfile
+    image: eletraenergy/offenders-frontend:latest
+    container_name: offender-frontend
+    ports:
+      - "9444:80"
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge
