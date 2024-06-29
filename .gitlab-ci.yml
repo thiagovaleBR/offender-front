@@ -47,8 +47,8 @@ images:
   stage: image
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
-    - docker build -t eletraenergy/Offenders-frontend:latest .
-    - docker push eletraenergy/Offenders-frontend:latest
+    - docker build -t eletraenergy/offenders-frontend:latest .
+    - docker push eletraenergy/offenders-frontend:latest
   tags:
     - docker
 
@@ -56,8 +56,8 @@ deploy:
   stage: deploy
   script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
-    - docker pull eletraenergy/Offenders-frontend:latest
-    - docker run -d -p 80:80 eletraenergy/Offenders-frontend:latest
+    - docker pull eletraenergy/offenders-frontend:latest
+    - docker run -d -p 8083:8083 eletraenergy/offenders-frontend:latest
   when: manual
   tags:
     - docker
