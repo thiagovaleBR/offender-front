@@ -28,6 +28,8 @@ test:
     when: always
     reports:
       junit: reports/**/*.xml
+  tags:
+    - docker
 
 build:
   stage: build
@@ -38,6 +40,8 @@ build:
   artifacts:
     paths:
       - dist/
+  tags:
+    - docker
 
 images:
   stage: image
@@ -45,6 +49,8 @@ images:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
     - docker build -t eletraenergy/Offenders-frontend:latest .
     - docker push eletraenergy/Offenders-frontend:latest
+  tags:
+    - docker
 
 deploy:
   stage: deploy
